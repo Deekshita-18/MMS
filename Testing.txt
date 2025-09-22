@@ -152,3 +152,38 @@ history:
  git show <commit_hash> → Show details of commit.
  git diff → Show unstaged changes.
 git blame file.txt → See who changed each line.
+
+FROM openjdk:17
+
+WORKDIR /app
+
+COPY target/MyJavaProject-0.0.1-SNAPSHOT.jar /app/app.jar
+
+CMD ["java", "-jar", "/app/app.jar"]
+
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: mjpc
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"   # expose your app on port 8080 (change if needed)
+
+  db:
+    image: postgres:15
+    container_name: mjp-db
+    restart: always
+    environment:
+      POSTGRES_USER: mjpuser
+      POSTGRES_PASSWORD: mjppass
+      POSTGRES_DB: mjpdb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"   # PostgreSQL default port
+
+volumes:
+  db_data:
